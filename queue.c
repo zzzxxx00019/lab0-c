@@ -174,8 +174,52 @@ void q_reverse(queue_t *q)
  * No effect if q is NULL or empty. In addition, if q has only one
  * element, do nothing.
  */
+
+list_ele_t *merge(list_ele_t *L1, list_ele_t *L2)
+{
+    if (!L2)
+        return L1;
+    if (!L1)
+        return L2;
+
+    if (strcmp(L1->value, L2->value) <= 0) {
+        L1->next = merge(L1->next, L2);
+        return L1;
+    } else {
+        L2->next = merge(L1, L2->next);
+        return L2;
+    }
+}
+
+list_ele_t *mergeSortList(list_ele_t *head)
+{
+    if (!head || !head->next)
+        return head;
+
+    list_ele_t *fast = head->next;
+    list_ele_t *slow = head;
+
+
+    while (fast && fast->next) {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+
+    fast = slow->next;
+    slow->next = NULL;
+
+    list_ele_t *L1 = mergeSortList(head);
+    list_ele_t *L2 = mergeSortList(fast);
+
+    return merge(L1, L2);
+}
+
 void q_sort(queue_t *q)
 {
-    /* TODO: You need to write the code for this function */
-    /* TODO: Remove the above comment when you are about to implement. */
+    if (!q || q->size == 1)
+        return;
+
+    q->head = mergeSortList(q->head);
+    while (q->tail)
+        q->tail = q->tail->next;
 }
