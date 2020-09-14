@@ -189,11 +189,9 @@ list_ele_t *merge(list_ele_t *l1, list_ele_t *l2)
     while (l1 && l2) {
         if (strcmp(l1->value, l2->value) <= 0) {
             *temp = l1;
-            // temp = temp->next ;
             l1 = l1->next;
         } else {
             *temp = l2;
-            // temp = temp->next ;
             l2 = l2->next;
         }
         temp = &((*temp)->next);
@@ -204,8 +202,6 @@ list_ele_t *merge(list_ele_t *l1, list_ele_t *l2)
     if (l2)
         *temp = l2;
 
-    // list_ele_t *head = q->next ;
-    // free(q) ;
     return head;
 }
 
