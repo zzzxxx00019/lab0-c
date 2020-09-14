@@ -43,6 +43,9 @@ void q_free(queue_t *q)
  */
 bool q_insert_head(queue_t *q, char *s)
 {
+    if (!q)
+        return false;
+
     list_ele_t *newh = malloc(sizeof(list_ele_t));
 
     if (!newh)
@@ -79,6 +82,9 @@ bool q_insert_head(queue_t *q, char *s)
  */
 bool q_insert_tail(queue_t *q, char *s)
 {
+    if (!q)
+        return false;
+
     list_ele_t *newh = malloc(sizeof(list_ele_t));
     if (!newh)
         return false;
@@ -175,20 +181,32 @@ void q_reverse(queue_t *q)
  * element, do nothing.
  */
 
-list_ele_t *merge(list_ele_t *L1, list_ele_t *L2)
+list_ele_t *merge(list_ele_t *l1, list_ele_t *l2)
 {
-    if (!L2)
-        return L1;
-    if (!L1)
-        return L2;
+    list_ele_t *head = NULL;
+    list_ele_t **temp = &head;
 
-    if (strcmp(L1->value, L2->value) <= 0) {
-        L1->next = merge(L1->next, L2);
-        return L1;
-    } else {
-        L2->next = merge(L1, L2->next);
-        return L2;
+    while (l1 && l2) {
+        if (strcmp(l1->value, l2->value) <= 0) {
+            *temp = l1;
+            // temp = temp->next ;
+            l1 = l1->next;
+        } else {
+            *temp = l2;
+            // temp = temp->next ;
+            l2 = l2->next;
+        }
+        temp = &((*temp)->next);
     }
+
+    if (l1)
+        *temp = l1;
+    if (l2)
+        *temp = l2;
+
+    // list_ele_t *head = q->next ;
+    // free(q) ;
+    return head;
 }
 
 list_ele_t *mergeSortList(list_ele_t *head)
@@ -199,19 +217,17 @@ list_ele_t *mergeSortList(list_ele_t *head)
     list_ele_t *fast = head->next;
     list_ele_t *slow = head;
 
-
     while (fast && fast->next) {
         slow = slow->next;
         fast = fast->next->next;
     }
-
     fast = slow->next;
     slow->next = NULL;
 
-    list_ele_t *L1 = mergeSortList(head);
-    list_ele_t *L2 = mergeSortList(fast);
+    list_ele_t *l1 = mergeSortList(head);
+    list_ele_t *l2 = mergeSortList(fast);
 
-    return merge(L1, L2);
+    return merge(l1, l2);
 }
 
 void q_sort(queue_t *q)
