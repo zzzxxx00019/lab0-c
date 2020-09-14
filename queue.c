@@ -1,8 +1,8 @@
+#include "queue.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "harness.h"
-#include "queue.h"
 
 /*
  * Create empty queue.
@@ -11,10 +11,9 @@
 queue_t *q_new()
 {
     queue_t *q = malloc(sizeof(queue_t));
-    if(q)
-    {
+    if (q) {
         q->head = q->tail = NULL;
-        q->size = 0 ;
+        q->size = 0;
     }
     return q;
 }
@@ -22,17 +21,15 @@ queue_t *q_new()
 /* Free all storage used by queue */
 void q_free(queue_t *q)
 {
-    list_ele_t *temp ;
+    if (!q)
+        return;
 
-    if(!q)  return ;
-
-    while(q->head)
-    {
-        temp = q->head ;
-        q->head = q->head->next ;
-        temp->next = NULL ;
-        free(temp->value) ;
-        free(temp) ;
+    while (q->head) {
+        list_ele_t *temp = q->head;
+        q->head = q->head->next;
+        temp->next = NULL;
+        free(temp->value);
+        free(temp);
     }
     free(q);
 }
@@ -48,23 +45,23 @@ bool q_insert_head(queue_t *q, char *s)
 {
     list_ele_t *newh = malloc(sizeof(list_ele_t));
 
-    if(!newh)	return false ;
+    if (!newh)
+        return false;
 
-    newh->value = malloc(sizeof(char)*( strlen(s)+1 )) ;
-    if(!newh->value)
-    {
-    	free(newh) ;
-    	return false ;
+    newh->value = malloc(sizeof(char) * (strlen(s) + 1));
+    if (!newh->value) {
+        free(newh);
+        return false;
     }
 
-    q->size ++ ;
-    strcpy(newh->value,s) ;
+    q->size++;
+    memset(newh->value, '\0', strlen(s) + 1);
+    strncpy(newh->value, s, strlen(s));
 
-    if(!q->head)
-    {
-        newh->next = NULL ;
-        q->head = q->tail = newh ;
-        return true ;
+    if (!q->head) {
+        newh->next = NULL;
+        q->head = q->tail = newh;
+        return true;
     }
 
     newh->next = q->head;
@@ -82,29 +79,26 @@ bool q_insert_head(queue_t *q, char *s)
  */
 bool q_insert_tail(queue_t *q, char *s)
 {
-    list_ele_t *newh = malloc(sizeof(list_ele_t*)) ;
-    if(!newh)
-            return false ;
+    list_ele_t *newh = malloc(sizeof(list_ele_t));
+    if (!newh)
+        return false;
 
-    newh->value = malloc(sizeof(char)*(strlen(s) + 1));
-    if(!newh->value)
-    {
-            free(newh) ;
-            return false ;
+    newh->value = malloc(sizeof(char) * (strlen(s) + 1));
+    if (!newh->value) {
+        free(newh);
+        return false;
     }
 
-    q->size ++ ;
-    strcpy(newh->value, s) ;
-    newh->next = NULL ;
+    q->size++;
+    memset(newh->value, '\0', strlen(s) + 1);
+    strncpy(newh->value, s, strlen(s));
+    newh->next = NULL;
 
-    if(!q->head)
-    {
-        q->head = q->tail = newh ;
-    }
-    else
-    {
-        q->tail->next = newh ;
-        q->tail = newh ;
+    if (!q->head) {
+        q->head = q->tail = newh;
+    } else {
+        q->tail->next = newh;
+        q->tail = newh;
     }
     return true;
 }
@@ -119,27 +113,26 @@ bool q_insert_tail(queue_t *q, char *s)
  */
 bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
 {
-    list_ele_t *rm_node ;
+    if (q && q->head) {
+        if (strlen(q->head->value) >= bufsize && !sp)
+            return false;
+        list_ele_t *rm_node = q->head;
 
-    if(q && q->head)
-    {
-        if(strlen(q->head->value) >= bufsize && !sp)   return false ;
-        rm_node = q->head ;
+        memset(sp, '\0', bufsize);
+        strncpy(sp, rm_node->value, bufsize - 1);
 
-        memset(sp, '\0', bufsize) ;
-        strncpy(sp, rm_node->value, bufsize-1) ;
+        q->head = q->head->next;
+        rm_node->next = NULL;
+        free(rm_node->value);
+        free(rm_node);
+        q->size--;
 
-        q->head = q->head->next ;
-        rm_node->next = NULL ;
-        free(rm_node->value) ;
-        free(rm_node) ;
-        q->size -- ;
+        if (q->size == 0)
+            q->tail = NULL;
 
-        if(q->size == 0)        q->tail = NULL ;
-
-        return true ;
+        return true;
     }
-    return false ;
+    return false;
 }
 
 /*
@@ -148,7 +141,9 @@ bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
  */
 int q_size(queue_t *q)
 {
-    return q->size ;
+    if (!q)
+        return 0;
+    return q->size;
 }
 
 /*
@@ -160,8 +155,18 @@ int q_size(queue_t *q)
  */
 void q_reverse(queue_t *q)
 {
-    /* TODO: You need to write the code for this function */
-    /* TODO: Remove the above comment when you are about to implement. */
+    if (!q || !q->head || q->size < 2)
+        return;
+
+    list_ele_t *cursor = NULL;
+    q->tail = q->head;
+    while (q->head) {
+        list_ele_t *next = q->head->next;
+        q->head->next = cursor;
+        cursor = q->head;
+        q->head = next;
+    }
+    q->head = cursor;
 }
 
 /*
