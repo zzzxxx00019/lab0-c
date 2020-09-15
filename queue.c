@@ -58,8 +58,7 @@ bool q_insert_head(queue_t *q, char *s)
     }
 
     q->size++;
-    memset(newh->value, '\0', strlen(s) + 1);
-    strncpy(newh->value, s, strlen(s));
+    strncpy(newh->value, s, strlen(s) + 1);
 
     if (!q->head) {
         newh->next = NULL;
@@ -96,8 +95,7 @@ bool q_insert_tail(queue_t *q, char *s)
     }
 
     q->size++;
-    memset(newh->value, '\0', strlen(s) + 1);
-    strncpy(newh->value, s, strlen(s));
+    strncpy(newh->value, s, strlen(s) + 1);
     newh->next = NULL;
 
     if (!q->head) {
