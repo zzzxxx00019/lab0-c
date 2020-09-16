@@ -4,6 +4,8 @@
 #include <string.h>
 #include "harness.h"
 
+// just test
+
 /*
  * Create empty queue.
  * Return NULL if could not allocate space.
